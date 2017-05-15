@@ -1,0 +1,15 @@
+<% content_for :page_title do %>
+  <%= Spree.t(:listing_favorite_products_users) %>
+<% end %>
+
+<%= paginate @users %>
+
+<% if @users.any? %>
+  <%= render 'spree/admin/shared/favorite_products/users', users: @users %>
+<% else %>
+  <div class="no-objects-found">
+    <%= Spree.t(:no_results) %>
+  </div>
+<% end %>
+
+<%= paginate @users %>

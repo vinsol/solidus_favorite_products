@@ -1,0 +1,24 @@
+<% content_for :page_actions do %>
+  <% if can?(:admin, Spree::Product) %>
+    <li id="new_product_link">
+      <%= Spree.t(:listing_favorite_products_users) %>
+    </li>
+  <% end %>
+<% end %>
+
+<%= render :partial => 'spree/admin/shared/product_tabs', :locals => { :current => 'Favorite Products' } %>
+<%= render :partial => 'spree/shared/error_messages', :locals => { :target => @product } %>
+
+<% admin_breadcrumb(Spree.t(:favorite_products, scope: [:admin, :tab])) %>
+
+<%= paginate @users if @user.present? %>
+
+<% if @users.any? %>
+  <%= render 'spree/admin/shared/favorite_products/users', users: @users %>
+<% else %>
+  <div class="no-objects-found">
+    <%= Spree.t(:no_results) %>
+  </div>
+<% end %>
+
+<%= paginate @users if @user.present? %>
