@@ -1,4 +1,6 @@
-class CreateTableFavorites < ActiveRecord::Migration
+# frozen_string_literal: true
+
+class CreateTableFavorites < SolidusSupport::Migration[4.2]
   def change
     create_table :favorites do |t|
       t.integer :user_id

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 Deface::Override.new(
   virtual_path: 'spree/products/show',
   name: 'add_favorite_products_after_login',
   insert_after: '[data-hook="product_show"]',
-  text: %Q{
+  text: %{
     <%= javascript_tag do %>
       var getQueryParams = function(qs) {
         qs = qs.split('+').join(' ');
@@ -30,5 +32,3 @@ Deface::Override.new(
     <% end %>
   }
 )
-
-

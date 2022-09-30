@@ -1,15 +1,6 @@
-require 'bundler'
-Bundler::GemHelper.install_tasks
+# frozen_string_literal: true
 
-require 'rspec/core/rake_task'
-require 'spree/testing_support/extension_rake'
+require 'solidus_dev_support/rake_tasks'
+SolidusDevSupport::RakeTasks.install
 
-RSpec::Core::RakeTask.new
-
-task default: [:spec]
-
-desc 'Generates a dummy app for testing'
-task :test_app do
-  ENV['LIB_NAME'] = 'solidus_favorite_products'
-  Rake::Task['extension:test_app'].invoke
-end
+task default: 'extension:specs'

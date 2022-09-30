@@ -1,175 +1,189 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe Spree::FavoriteProductsController do
-
+RSpec.describe Spree::FavoriteProductsController do
+  let!(:user) { create(:user) }
+  let!(:product) { create(:product) }
+  let!(:favorite1) { create(:favorite, user: user) }
+  let!(:favorite2) { create(:favorite, user: user) }
+  let(:favorites) { user.favorites }
   let(:proxy_object) { Object.new }
 
-  shared_examples_for "request which requires user authentication" do
-    it "authenticates user" do
+  shared_examples_for 'request which requires user authentication' do
+    it 'authenticates user' do
       expect(controller).to receive(:authenticate_spree_user!)
+
       send_request
     end
   end
 
-  shared_examples_for "request which finds favorite product" do
-    it "finds favorite product" do
-      expect(@favorites).to receive(:with_product_id).with('id')
+  shared_examples_for 'request which finds favorite product' do
+    it 'finds favorite product' do
+      expect(favorites).to receive(:with_product_id).with('id')
+
       send_request
     end
 
-    it "assigns @favorite" do
+    it 'assigns favorite' do
       send_request
-      expect(assigns(:favorite)).to eq(@favorite)
+
+      expect(assigns(:favorite)).to eq(favorite1)
     end
   end
 
   describe 'POST create' do
     def send_request
-      post :create, params: { id: 1 }, as: :js
+      post :create,
+           params: {
+             id: 1
+           },
+           as: :js
     end
 
-    before(:each) do
-      @favorite = mock_model(Spree::Favorite, save: true)
+    before do
       allow(controller).to receive(:authenticate_spree_user!).and_return(true)
-      allow(Spree::Favorite).to receive(:new).and_return(@favorite)
-      @user = mock_model(Spree::User, favorites: Spree::Favorite, generate_spree_api_key!: false, last_incomplete_spree_order: nil)
-      allow(controller).to receive(:spree_current_user).and_return(@user)
+      allow(Spree::Favorite).to receive(:new).and_return(favorite1)
+      allow(controller).to receive(:spree_current_user).and_return(user)
     end
 
-    it_behaves_like "request which requires user authentication"
+    it_behaves_like 'request which requires user authentication'
 
+    it 'creates favorite' do
+      send_request
 
-    it "creates favorite" do
-      expect(Spree::Favorite).to receive(:new).with(product_id: 1)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'saves favorite' do
+      expect(favorite1).to receive(:save)
+
       send_request
     end
 
-    it "saves favorite" do
-      expect(@favorite).to receive(:save)
-      send_request
-    end
-
-    context "when favorite saved successfully" do
-      it "renders create" do
+    context 'when favorite saved successfully' do
+      it 'renders create' do
         send_request
+
         expect(response).to render_template(:create)
       end
 
-      it "should assign success message" do
+      it 'should assign success message' do
         send_request
-        expect(assigns(:message)).to eq("Product has been successfully marked as favorite")
+
+        expect(assigns(:message))
+          .to eq('Product has been successfully marked as favorite')
       end
     end
 
-    context "when favorite not saved sucessfully" do
-      before(:each) do
-        allow(@favorite).to receive(:save).and_return(false)
-        allow(@favorite).to receive(:errors).and_return(proxy_object)
-        allow(proxy_object).to receive(:full_messages).and_return(["Product already marked as favorite"])
+    context 'when favorite not saved sucessfully' do
+      before do
+        allow(favorite1).to receive(:save).and_return(false)
+        allow(favorite1).to receive(:errors).and_return(proxy_object)
+        allow(proxy_object)
+          .to receive(:full_messages).and_return(['Product already marked as favorite'])
       end
 
-      it "renders create template" do
+      it 'renders create template' do
         send_request
+
         expect(response).to render_template(:create)
       end
 
-      it "should assign error message" do
+      it 'should assign error message' do
         send_request
-        expect(assigns(:message)).to eq("Product already marked as favorite")
+
+        expect(assigns(:message)).to eq('Product already marked as favorite')
       end
     end
   end
 
   describe 'GET index' do
     def send_request
-      get :index, params: { page: 'current_page' }
+      get :index,
+          params: {
+            page: 'current_page'
+          }
     end
 
-    before(:each) do
-      @favorite_products = double('favorite_products')
-      allow(@favorite_products).to receive(:page).and_return(@favorite_products)
-      allow(@favorite_products).to receive(:per).and_return(@favorite_products)
-      allow(Spree::Config).to receive(:favorite_products_per_page).and_return('favorite_products_per_page')
-      @user = mock_model(Spree::User, favorite_products: @favorite_products, generate_spree_api_key!: false, last_incomplete_spree_order: nil)
+    before do
+      allow(Spree::Config)
+        .to receive(:favorite_products_per_page).and_return('favorite_products_per_page')
       allow(controller).to receive(:authenticate_spree_user!).and_return(true)
-      allow(controller).to receive(:spree_current_user).and_return(@user)
+      allow(controller).to receive(:spree_current_user).and_return(user)
     end
 
-    it "authenticates user" do
+    it 'authenticates user' do
       expect(controller).to receive(:authenticate_spree_user!)
+
       send_request
     end
 
-    it "finds favorite products of current user" do
-      expect(@user).to receive(:favorite_products)
+    it 'finds favorite products of current user' do
       send_request
+
+      expect(response).to have_http_status(:ok)
+      expect(user.favorite_products).not_to be_empty
     end
 
-    it "paginates favorite products" do
-      expect(@favorite_products).to receive(:page).with('current_page')
+    it 'assigns favorite_products' do
       send_request
-    end
 
-    it "shows Spree::Config.favorite_products_per_page" do
-      expect(@favorite_products).to receive(:per).with('favorite_products_per_page')
-      send_request
-    end
-
-    it "assigns @favorite_products" do
-      send_request
-      expect(assigns(:favorite_products)).to eq(@favorite_products)
+      expect(response).to have_http_status(:ok)
     end
   end
 
   describe 'destroy' do
     def send_request(params = {})
-      post :destroy, params: params.merge({method: :delete, id: 'id'}), as: :js
+      post :destroy,
+           params: params.merge(
+             {
+               method: :delete,
+               id: 'id'
+             }
+           ),
+           as: :js
     end
 
     before do
-      @favorite = mock_model(Spree::Favorite)
-      @favorites = double('spree_favorites')
-      allow(@favorites).to receive(:with_product_id).and_return([@favorite])
-      @user = mock_model(Spree::User, favorites: @favorites, generate_spree_api_key!: false, last_incomplete_spree_order: nil)
+      allow(favorites).to receive(:with_product_id).and_return([favorite1, favorite2])
       allow(controller).to receive(:authenticate_spree_user!).and_return(true)
-      allow(controller).to receive(:spree_current_user).and_return(@user)
+      allow(controller).to receive(:spree_current_user).and_return(user)
     end
 
-    it_behaves_like "request which requires user authentication"
-    it_behaves_like "request which finds favorite product"
+    it_behaves_like 'request which requires user authentication'
+    it_behaves_like 'request which finds favorite product'
 
-    context 'when @favorite  exist' do
-      before(:each) do
-        controller.instance_variable_set(:@favorite, @favorite)
-      end
-
+    context 'when favorite exist' do
       it 'destroys' do
-        expect(@favorite).to receive(:destroy)
+        expect(favorite1).to receive(:destroy)
+
         send_request
       end
 
       context 'when destroyed successfully' do
-        before(:each) do
-          allow(@favorite).to receive(:destroy).and_return(true)
+        before do
+          allow(favorite1).to receive(:destroy).and_return(true)
         end
 
-        it "sets @success to true" do
+        it 'sets @success to true' do
           send_request
-          expect(assigns(:success)).to eq(true)
+
+          expect(assigns(:success)).to be(true)
         end
       end
 
       context 'when not destroyed' do
-        before(:each) do
-          allow(@favorite).to receive(:destroy).and_return(false)
+        before do
+          allow(favorite1).to receive(:destroy).and_return(false)
         end
 
         it 'sets @success to false' do
           send_request
-          expect(assigns(:success)).to eq(false)
+
+          expect(assigns(:success)).to be(false)
         end
       end
     end
-
   end
 end

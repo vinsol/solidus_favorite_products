@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module SolidusFavoriteProducts
   module Generators
     class InstallGenerator < Rails::Generators::Base
-
       class_option :auto_run_migrations, type: :boolean, default: false
 
       def add_javascripts

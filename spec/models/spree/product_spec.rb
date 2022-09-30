@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Spree::Favorite, type: :model do
+RSpec.describe Spree::Product, type: :model do
   let!(:shipping_category) do
     create(
       :shipping_category,
@@ -58,22 +58,35 @@ RSpec.describe Spree::Favorite, type: :model do
     )
   end
 
-  it { is_expected.to respond_to(:product) }
-  it { is_expected.to respond_to(:user) }
+  before do
+    user1.favorites.create!(product: favorite_product1)
+    user2.favorites.create!(product: favorite_product1)
+    user2.favorites.create!(product: favorite_product2)
+  end
 
-  describe '.with_product_id' do
-    let!(:favorite1) { user1.favorites.create!(product: favorite_product1) }
-    let!(:favorite2) { user2.favorites.create!(product: favorite_product1) }
-    let!(:favorite3) { user2.favorites.create!(product: favorite_product2) }
+  it { is_expected.to respond_to(:favorites) }
+  it { is_expected.to respond_to(:favorite_users) }
 
-    it 'expects to list favorites with given product id' do
-      expect(described_class.with_product_id(favorite_product1.id))
-        .to include(favorite1, favorite2)
+  describe 'Spree::Product.favorite' do
+    it 'returns favorite products' do
+      expect(described_class.favorite)
+        .to match_array([favorite_product1, favorite_product2])
+    end
+  end
+
+  describe '.order_by_favorite_users_count' do
+    context 'when order not passed' do
+      it 'returns products ordered by users_count in descending order' do
+        expect(described_class.favorite.order_by_favorite_users_count)
+          .to eq([favorite_product1, favorite_product2])
+      end
     end
 
-    it 'expects not to list favorites with other product id' do
-      expect(described_class.with_product_id(favorite_product1.id))
-        .not_to include(favorite3)
+    context 'when asc order passed' do
+      it 'returns products ordered by users_count in ascending order' do
+        expect(described_class.favorite.order_by_favorite_users_count(true))
+          .to eq([favorite_product2, favorite_product1])
+      end
     end
   end
 end

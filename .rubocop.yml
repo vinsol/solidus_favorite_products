@@ -1,0 +1,71 @@
+require:
+  - solidus_dev_support/rubocop
+
+inherit_gem:
+  solidus_dev_support: .rubocop.yml
+
+AllCops:
+  Exclude:
+    - spec/dummy/**/*
+    - vendor/**/*
+
+Rails/SkipsModelValidations:
+  Exclude:
+    - db/migrate/**/*
+
+Style/RegexpLiteral:
+  Enabled: false
+
+Rails/Output:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/LetSetup:
+  Enabled: false
+
+Rails/CreateTableWithTimestamps:
+  Enabled: false
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
+Layout/ArgumentAlignment:
+  Enabled: false
+
+Gemspec/OrderedDependencies:
+  Enabled: false
+
+RSpec/PredicateMatcher:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/MessageChain:
+  Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+Naming/PredicateName:
+  Enabled: false
+
+Rails/RakeEnvironment:
+  Enabled: false
+
+RSpec/ExampleWording:
+  Enabled: false
+
+Style/NestedParenthesizedCalls:
+  Enabled: false

@@ -1,6 +1,8 @@
 Solidus Favorite Products
-=======================
-[![Code Climate](https://codeclimate.com/github/vinsol/solidus_favorite_products.svg)](https://codeclimate.com/github/vinsol/solidus_favorite_products)
+================
+
+[![Circle CI](https://circleci.com/gh/jtapia/solidus_favorite_products/tree/master.svg?style=shield)](https://circleci.com/gh/jtapia/solidus_favorite_products/tree/master)
+
 * Solidus Favorite Products is an extension that allows the user to mark/unkmark a product as favorite from the product page.
 
 * Admin can view which products have been marked as favorite, and by which users, on the Admin end.

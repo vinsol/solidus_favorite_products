@@ -1,37 +1,38 @@
 <% admin_breadcrumb(link_to plural_resource_name(Spree::LegacyUser), spree.admin_users_path) %>
 <% admin_breadcrumb(link_to @user.email, edit_admin_user_url(@user)) %>
-<% admin_breadcrumb(Spree.t(:favorite_products, scope: [:admin, :tab])) %>
+<% admin_breadcrumb(I18n.t('spree.admin.tab.favorite_products')) %>
 
 <%= render 'spree/admin/users/sidebar' %>
 <%= render 'spree/admin/users/tabs', current: :favorite_products %>
 <%= render partial: 'spree/admin/users/user_page_actions' %>
 
-<div data-hook="account_my_favorite_products" class="account-my-favorite-products commonform">
-  <h3><%= Spree.t(:favorite_products, scope: [:admin, :tab]) %></h3>
+<div data-hook='account_my_favorite_products' class='account-my-favorite-products commonform'>
+  <h3><%= t('spree.favorite_products', scope: [:admin, :tab]) %></h3>
   <% if @favorite_products.present? %>
-    <table class="favorite-products order-summary" width="100%">
+    <table class='favorite-products order-summary' width='100%'>
       <thead>
-      <tr>
-        <th class="favorite-product-image"><%= Spree.t(:product_image) %></th>
-        <th class="favorite-product-name"><%= Spree.t(:product_name) %></th>
-        <th class="favorite-product-action actions"></th>
-      </tr>
-      </thead>
-      <tbody>
-      <% @favorite_products.each do |product| %>
-        <tr class="<%= cycle('even', 'odd') %> favorite_product" id="favorite_product_<%= product.id %>">
-          <td class="favorite-product-image"><%= link_to admin_product_path(product) do %>
-          <%= image_tag product.display_image.attachment(:mini) %>
-          <% end %>
-          </td>
-          <td class="favorite-product-name"><%=link_to product.name, admin_product_path(product) %></td>
-          <td class="favorite-product-remove actions"><%= link_to_delete product, no_text: true %>
+        <tr>
+          <th class='favorite-product-image'><%= I18n.t('spree.product_image') %></th>
+          <th class='favorite-product-name'><%= I18n.t('spree.product_name') %></th>
+          <th class='favorite-product-action actions'></th>
         </tr>
-      <% end %>
+      </thead>
+
+      <tbody>
+        <% @favorite_products.each do |product| %>
+          <tr class="<%= cycle('even', 'odd') %> favorite_product" id="favorite_product_<%= product.id %>">
+            <td class='favorite-product-image'><%= link_to admin_product_path(product) do %>
+            <%= image_tag product.display_image.attachment(:mini) %>
+            <% end %>
+            </td>
+            <td class='favorite-product-name'><%=link_to product.name, admin_product_path(product) %></td>
+            <td class='favorite-product-remove actions'><%= link_to_delete product, no_text: true %>
+          </tr>
+        <% end %>
       </tbody>
     </table>
   <% else %>
-    <p><%= Spree.t(:you_have_no_favorite_products_yet) %></p>
+    <p><%= I18n.t('spree.you_have_no_favorite_products_yet') %></p>
   <% end %>
 
   <%= paginate @favorite_products %>

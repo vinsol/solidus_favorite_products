@@ -1,29 +1,29 @@
-<div data-hook="account_my_favorite_products" class="account-my-favorite-products commonform">
-  <h3><%= Spree.t(:my_favorite_products) %></h3>
+<div data-hook='account_my_favorite_products' class='account-my-favorite-products commonform'>
+  <h3><%= t('spree.my_favorite_products') %></h3>
   <% if @favorite_products.present? %>
-    <table class="favorite-products order-summary" width="100%">
+    <table class='favorite-products order-summary' width='100%'>
       <thead>
       <tr>
-        <th class="favorite-product-image"><%= Spree.t(:product_image) %></th>
-        <th class="favorite-product-name"><%= Spree.t(:product_name) %></th>
-        <th class="favorite-product-action">Action</th>
+        <th class='favorite-product-image'><%= t('spree.product_image') %></th>
+        <th class='favorite-product-name'><%= t('spree.product_name') %></th>
+        <th class='favorite-product-action'>Action</th>
       </tr>
       </thead>
       <tbody>
       <% @favorite_products.each do |product| %>
         <tr class="<%= cycle('even', 'odd') %> favorite_product" id="favorite_product_<%= product.id %>">
-          <td class="favorite-product-image"><%= link_to product_path(product) do %>
+          <td class='favorite-product-image'><%= link_to product_path(product) do %>
           <%= image_tag product.display_image.attachment(:mini) %>
           <% end %>
           </td>
-          <td class="favorite-product-name"><%= link_to product.name, product_path(product) %></td>
-          <td class="favorite-product-remove"><%= link_to 'Remove', favorite_product_path(id: product.id), method: :delete, remote: true, confirm: Spree.t(:are_you_sure_to_remove_product) %>
+          <td class='favorite-product-name'><%= link_to product.name, product_path(product) %></td>
+          <td class='favorite-product-remove'><%= link_to 'Remove', favorite_product_path(id: product.id), method: :delete, remote: true, confirm: t('spree.are_you_sure_to_remove_product') %>
         </tr>
       <% end %>
       </tbody>
     </table>
   <% else %>
-    <p><%= Spree.t(:you_have_no_favorite_products_yet) %></p>
+    <p><%= t('spree.you_have_no_favorite_products_yet') %></p>
   <% end %>
 
   <%= paginate @favorite_products %>
